@@ -1,0 +1,5 @@
+{
+  "name": "ritmo-ia",
+  "owner": { "name": "Julian Ruiz" },
+  "plugins": [{ "name": "ritmo-ia", "source": "./" }]
+}

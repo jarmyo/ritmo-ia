@@ -1,0 +1,10 @@
+{
+  "name": "ritmo-ia",
+  "version": "0.1.0",
+  "description": "Dice si vas arriba o abajo del ritmo ideal de uso semanal del plan",
+  "author": {
+    "name": "Julian Ruiz"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/jarmyo/ritmo-ia"
+}
