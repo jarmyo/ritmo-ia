@@ -8,7 +8,7 @@ Junto a la línea de estado muestra, por ejemplo, `ritmo-ia ▲ +7 🟡`:
 - **Número**: puntos de diferencia entre el % semanal usado y el % de la semana ya transcurrido (el ideal).
 - **Color**: 🔴 más de 15 arriba · 🟡 más de 5 arriba · 🟢 entre 10 abajo y 5 arriba · 🔵 más de 10 abajo.
 
-Lee la ventana `seven_day` de los límites del plan que reporta Claude Code; se actualiza tras cada turno y cada minuto. Solo funciona con una suscripción que tenga límites semanales.
+Lee la ventana `seven_day` de los límites del plan que reporta Claude Code; se actualiza tras cada turno y cada minuto. Como el uso semanal es de toda la cuenta, guarda la última lectura y todos los chats la muestran desde que abren, sin esperar su primera respuesta; solo hace falta que algún chat haya recibido una respuesta esta semana. Solo funciona con una suscripción que tenga límites semanales.
 
 ## Instalar
 

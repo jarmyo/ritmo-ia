@@ -7,13 +7,18 @@ const VENTANAS: Record<string, { horas: number; nombre: string }> = {
   seven_day: { horas: 168, nombre: '' },
 }
 
+// El uso semanal es de la cuenta, no del chat: la última lectura sirve para
+// todos. Un chat nuevo no tiene datos propios hasta su primera respuesta.
+const CLAVE = 'ultimaLectura'
+
 let ultimos: SessionRateLimit[] = []
 
 export function diagnostico(lim: SessionRateLimit, ahoraMs: number) {
   const v = VENTANAS[lim.kind]
   if (!v || !lim.resetsAt) return undefined
   const resetMs = Date.parse(lim.resetsAt)
-  if (Number.isNaN(resetMs)) return undefined
+  // Una lectura guardada de la semana anterior ya no dice nada.
+  if (Number.isNaN(resetMs) || resetMs <= ahoraMs) return undefined
   const totalMs = v.horas * 3600_000
   const transcurrido = Math.min(totalMs, Math.max(0, ahoraMs - (resetMs - totalMs)))
   const ideal = (transcurrido / totalMs) * 100
@@ -40,20 +45,42 @@ async function pintar($: Dolar) {
   $.ui.status(texto(ultimos, await $.clock.now()))
 }
 
+async function guardados($: Dolar) {
+  try {
+    const v = await $.store.get(CLAVE)
+    return Array.isArray(v) ? (v as SessionRateLimit[]) : []
+  } catch {
+    return []
+  }
+}
+
 export const register: Register = on => {
   on('session.start', async ($, e, next) => {
     const r = await next(e)
     try {
-      ultimos = (await $.session.usage()).rateLimits
+      const vivos = (await $.session.usage()).rateLimits
+      ultimos = vivos.length ? vivos : await guardados($)
       await pintar($)
     } catch {}
-    // El ideal avanza con el tiempo aunque no haya turnos.
-    $.clock.every(60_000, () => pintar($))
+    // El ideal avanza con el tiempo aunque no haya turnos, y otro chat puede
+    // haber guardado una lectura más nueva.
+    $.clock.every(60_000, async () => {
+      const g = await guardados($)
+      if (g.length) ultimos = g
+      await pintar($)
+    })
     return r
   })
 
   on('session.measure', async ($, e, next) => {
-    ultimos = e.rateLimits
+    if (e.rateLimits.length) {
+      ultimos = e.rateLimits
+      if (e.changed.includes('rateLimits')) {
+        try {
+          await $.store.set(CLAVE, e.rateLimits)
+        } catch {}
+      }
+    }
     await pintar($)
     return next(e)
   })
