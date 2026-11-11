@@ -28,6 +28,22 @@ claude plugin install ritmo-ia --marketplace jarmyo/ritmo-ia
 
 En la app de escritorio: clic en **+** junto al cuadro del prompt → Plugins → Add marketplace con `jarmyo/ritmo-ia` → Add plugin.
 
+## Barra de menú de macOS
+
+La app de escritorio de Claude no dibuja la línea de estado de los mods. Para ver el indicador siempre, junto a la hora, hay una app nativa en `barra-mac/` que lee la última lectura que guarda el mod (`~/.claude/plugins/store/ritmo-ia_*.json`). El ideal se recalcula cada 30 segundos y el menú muestra el % usado, el ideal, cuándo se reinicia la semana y de cuándo es la lectura.
+
+Necesita el mod instalado y las herramientas de línea de comandos de Xcode (`swiftc`):
+
+```bash
+./barra-mac/instalar.sh
+```
+
+La compila en `~/Applications/RitmoIA.app` y agrega un LaunchAgent (`~/Library/LaunchAgents/com.jarmyo.ritmo-ia.plist`) para que abra al iniciar sesión. Para quitarla:
+
+```bash
+launchctl bootout gui/$(id -u)/com.jarmyo.ritmo-ia; rm -rf ~/Library/LaunchAgents/com.jarmyo.ritmo-ia.plist ~/Applications/RitmoIA.app
+```
+
 ## Licencia
 
 MIT
